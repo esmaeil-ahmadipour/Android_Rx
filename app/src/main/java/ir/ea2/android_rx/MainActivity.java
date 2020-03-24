@@ -1,53 +1,40 @@
 package ir.ea2.android_rx;
 
 import android.os.Bundle;
-import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity {
-    Observable<List<String>> observableObject;
-    Observer<List<String>> observerObject;
-    String data = "www.ea2.ir";
-    public static final String TAG = "TAG_LOG";
-    List<String> stringList = new ArrayList<>();
+    private RecyclerView recyclerView ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // * Add To List.
-        stringList.add("John");
-        stringList.add("Mick");
-        stringList.add("Steve");
-        stringList.add("Jack");
+        setViews();
+        FakeApi fakeApi = new FakeApi();
 
-        // * Publish String Data .
-        observableObject = Observable.just(stringList);
-
-
-        // * Subscribe Of observableObject ;
-        observerObject = new Observer<List<String>>() {
+        fakeApi.posts();
+        Observer<List<DataModel>> observerObject = new Observer<List<DataModel>>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
 
             }
 
             @Override
-            public void onNext(@NonNull List<String> strings) {
-                int i = 0;
-                while (i < stringList.size()) {
-                    Log.e(TAG, "onNext : "+stringList.get(i));
-                    i++;
-                }
+            public void onNext(@NonNull List<DataModel> dataModels) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+                CustomAdapter adapter = new CustomAdapter(dataModels);
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -60,8 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+        fakeApi.listObservable.subscribe(observerObject);
 
-        // * Adding Subscriber To Publisher
-        observableObject.subscribe(observerObject);
+    }
+
+    private void setViews() {
+        recyclerView=findViewById(R.id.ac_main_rc_main);
+
     }
 }
