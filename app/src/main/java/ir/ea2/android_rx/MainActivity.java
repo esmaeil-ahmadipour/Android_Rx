@@ -3,6 +3,9 @@ package ir.ea2.android_rx;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
@@ -10,32 +13,41 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity {
-    Observable<String> observableObject;
-    Observer<String> observerObject;
+    Observable<List<String>> observableObject;
+    Observer<List<String>> observerObject;
     String data = "www.ea2.ir";
     public static final String TAG = "TAG_LOG";
+    List<String> stringList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // * Add To List.
+        stringList.add("John");
+        stringList.add("Mick");
+        stringList.add("Steve");
+        stringList.add("Jack");
+
         // * Publish String Data .
-        observableObject = Observable.just(data);
+        observableObject = Observable.just(stringList);
 
 
         // * Subscribe Of observableObject ;
-        observerObject = new Observer<String>() {
-
+        observerObject = new Observer<List<String>>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-                Log.e(TAG , "onSubscribe : "+d.toString());
 
             }
 
             @Override
-            public void onNext(@NonNull String s) {
-                // * We Can Get data From Publisher.
-                Log.e(TAG , "onNext : "+s);
+            public void onNext(@NonNull List<String> strings) {
+                int i = 0;
+                while (i < stringList.size()) {
+                    Log.e(TAG, "onNext : "+stringList.get(i));
+                    i++;
+                }
             }
 
             @Override
@@ -45,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onComplete() {
-                // * When Received All Data From Publisher.
 
             }
         };
