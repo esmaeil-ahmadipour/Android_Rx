@@ -1,58 +1,49 @@
 package ir.ea2.android_rx;
 
 import android.os.Bundle;
-
-import java.util.List;
-
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerView ;
+    public static final String TAG = "TAG_LOG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DataModel dataModel = new DataModel("1", "RxAndroid");
+        Observable<DataModel> dataModelObservable = Observable.create((ObservableOnSubscribe<DataModel>) emitter -> {
+            if (!emitter.isDisposed()) {
+                emitter.onNext(dataModel);
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
 
-        setViews();
-        FakeApi fakeApi = new FakeApi();
 
-        fakeApi.posts();
-        Observer<List<DataModel>> observerObject = new Observer<List<DataModel>>() {
+        dataModelObservable.subscribe(new Observer<DataModel>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-
             }
 
             @Override
-            public void onNext(@NonNull List<DataModel> dataModels) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-
-                CustomAdapter adapter = new CustomAdapter(dataModels);
-                recyclerView.setAdapter(adapter);
+            public void onNext(@NonNull DataModel dataModel) {
+                Log.e(TAG, dataModel.getTitle());
             }
 
             @Override
             public void onError(@NonNull Throwable e) {
-
             }
 
             @Override
             public void onComplete() {
-
             }
-        };
-        fakeApi.listObservable.subscribe(observerObject);
-
-    }
-
-    private void setViews() {
-        recyclerView=findViewById(R.id.ac_main_rc_main);
-
+        });
     }
 }

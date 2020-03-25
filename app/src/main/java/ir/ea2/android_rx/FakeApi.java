@@ -17,3 +17,29 @@ class FakeApi {
         listObservable = Observable.just(list);
     }
 }
+
+
+// * Singleton Pattern :
+/*
+        class FakeApi {
+            private static final FakeApi ourInstance = new FakeApi();
+
+            static FakeApi getInstance() {
+                return ourInstance;
+            }
+
+            private FakeApi() {
+            }
+
+
+            private List<DataModel> list = new ArrayList<>();
+
+            Observable<List<DataModel>> getListObservable() {
+                for (int i = 0; i <= 3; i++) {
+                    String personId = String.valueOf(i);
+                    list.add(new DataModel(personId, "Person" + personId));
+                }
+                return Observable.just(list);
+            }
+        }
+ */
