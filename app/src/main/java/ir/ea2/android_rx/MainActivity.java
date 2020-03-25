@@ -18,32 +18,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DataModel dataModel = new DataModel("1", "RxAndroid");
-        Observable<DataModel> dataModelObservable = Observable.create((ObservableOnSubscribe<DataModel>) emitter -> {
-            if (!emitter.isDisposed()) {
-                emitter.onNext(dataModel);
-                emitter.onComplete();
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+
+        Observable.just("Person 1","Person 2","Person 3","Person 4","Person 5")
+                .subscribeOn(Schedulers.io())
+                .repeat(3)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull String s) {
+                    Log.e(TAG , s);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
 
 
-        dataModelObservable.subscribe(new Observer<DataModel>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {
-            }
-
-            @Override
-            public void onNext(@NonNull DataModel dataModel) {
-                Log.e(TAG, dataModel.getTitle());
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
     }
 }
